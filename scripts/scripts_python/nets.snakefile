@@ -1,8 +1,8 @@
-input_folder = "/home/fdelogu/biowide_net/data"
-output_folder = "/home/fdelogu/biowide_net/results"
-env_folder = "/home/fdelogu/biowide_net/envs"
-script_folder = "/home/fdelogu/biowide_net/scripts"
-submodule_folder = "/home/fdelogu/biowide_net/submodules"
+input_folder = os.environ['INPUT_DIR'] # "/home/fdelogu/biowide_net/data"
+output_folder = os.environ['OUTPUT_DIR'] # "/home/fdelogu/biowide_net/results"
+env_folder = os.environ['ENV_DIR'] # "/home/fdelogu/biowide_net/envs"
+script_folder = os.environ['SCRIPTS_DIR'] # "/home/fdelogu/biowide_net/scripts"
+submodule_folder = os.environ['SUBMODULES_DIR'] # "/home/fdelogu/biowide_net/submodules"
 
 map_labels = ["EarlyDryPoor", "EarlyWetRich", "EarlyWetPoor", "LateDryPoor", "EarlyDryRich", "LateWetPoor", "LateDryRich", "LateWetRich"]
 net_types = ["sparcc", "jaccard", "pearson"]

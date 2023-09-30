@@ -6,9 +6,9 @@ counts_OTUs_table: "2023-09-25_genus_table_rarefied.csv"
 binary_OTUs_table: "2023-09-25_plant_table.csv"
 
 # Params for sparcc
-sparcc_inferences: 1
-sparcc_exlclusions: 1
-sparcc_permutations: 10
+sparcc_inferences: 20
+sparcc_exlclusions: 10
+sparcc_permutations: 1000
 
 # Params to filter the nets
 filter_p_val: 0.05
