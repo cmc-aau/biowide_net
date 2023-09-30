@@ -1,0 +1,15 @@
+
+rule bridge_network:
+    input:
+        output_folder + "/split_OTUs/sparcc/{map_label}_OTU.csv",
+        output_folder + "/split_OTUs/jaccard/{map_label}_OTU.csv",
+    output:
+        output_folder + "/split_nets/pearson/{map_label}_final.xlsx",
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/pearson.R --counts_OTUs {input[0]} --binary_OTUs {input[1]} --out_file {output}
+        """
+
+

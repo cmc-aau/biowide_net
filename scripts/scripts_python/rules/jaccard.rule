@@ -1,0 +1,27 @@
+rule split_binary_OTUs:
+    input:
+        binary_table = input_folder + "/" + config["binary_OTUs_table"],
+        mapping_table = output_folder + "/mapping.txt",
+    output:
+        expand(output_folder + "/split_OTUs/jaccard/{map_label}_OTU.csv", map_label = map_labels),
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/split_OTUs.R --file {input.binary_table} --mapping {input.mapping_table} --out_folder {output_folder}/split_OTUs/jaccard
+        """
+
+
+rule jaccard_network:
+    input:
+        output_folder + "/split_OTUs/jaccard/{map_label}_OTU.csv",
+    output:
+        output_folder + "/split_nets/jaccard/{map_label}_final.xlsx",
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/jaccard.R --file {input} --out_file {output}
+        """
+
+

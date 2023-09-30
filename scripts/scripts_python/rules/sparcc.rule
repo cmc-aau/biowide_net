@@ -1,0 +1,152 @@
+#N_inf = config["sparcc_inferences"]
+#N_exl = config["sparcc_exlclusions"]
+#N_perm = config["sparcc_permutations"]
+
+
+rule split_OTUs:
+    input:
+        counts_table = input_folder + "/" + config["counts_OTUs_table"],
+        mapping_table = output_folder + "/mapping.txt",
+    output:
+        expand(output_folder + "/split_OTUs/sparcc/{map_label}_OTU.csv", map_label = map_labels),
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/split_OTUs.R --file {input.counts_table} --mapping {input.mapping_table} --out_folder {output_folder}/split_OTUs/sparcc
+        """
+
+
+rule sparcc_network:
+    input:
+        output_folder + "/split_OTUs/sparcc/{map_label}_OTU.csv",
+    output:
+        temp(output_folder + "/split_nets/sparcc/{map_label}_scor.csv"),
+        temp(output_folder + "/split_nets/sparcc/{map_label}_scov.csv"),
+    params:
+        N_inf = config["sparcc_inferences"],
+        N_exl = config["sparcc_exlclusions"]
+    conda:
+        env_folder + "/sparcc_dlegor.yml"
+    shell:
+        """
+        mkdir -p "{output_folder}/tmp_{wildcards.map_label}"
+        cd "{output_folder}/tmp_{wildcards.map_label}"
+
+        python {submodule_folder}/SparCC/Compute_SparCC.py -di {input} \
+                                                   -scor {output[0]} \
+                                                   -scov {output[1]} \
+                                                   -n {wildcards.map_label} \
+                                                   -ni {params.N_inf} \
+                                                   -xi {params.N_exl}
+
+        rm -r "{output_folder}/tmp_{wildcards.map_label}"
+        """
+
+
+rule sparcc_permutation:
+    input:
+        output_folder + "/split_OTUs/sparcc/{map_label}_OTU.csv",
+    output:
+        temp(expand(output_folder + "/split_nets/sparcc/pvals/{{map_label}}_perm_{n_perm}.csv", n_perm = list(range(config["sparcc_permutations"]))))
+    params:
+        N_perm = config["sparcc_permutations"]
+    conda:
+        env_folder + "/sparcc_dlegor.yml"
+    shell:
+        """
+        mkdir -p "{output_folder}/tmp_perm_{wildcards.map_label}"
+        cd "{output_folder}/tmp_perm_{wildcards.map_label}"
+
+        python {submodule_folder}/SparCC/MakeBootstraps.py {input} -n {params.N_perm} -t permutation_#.csv -t {wildcards.map_label}_perm_#.csv -p {output_folder}/split_nets/sparcc/pvals/
+
+        rm -r "{output_folder}/tmp_perm_{wildcards.map_label}"
+        """
+
+
+rule sparcc_p_nets:
+    input:
+        output_folder + "/split_nets/sparcc/pvals/{map_label}_perm_{n_perm}.csv",
+    output:
+        temp(output_folder + "/split_nets/sparcc/pvals/{map_label}_scor_{n_perm}.csv"),
+        temp(output_folder + "/split_nets/sparcc/pvals/{map_label}_scov_{n_perm}.csv"),
+    wildcard_constraints:
+        n_perm = "[0-9]+",
+    params:
+        N_inf = config["sparcc_inferences"],
+        N_exl = config["sparcc_exlclusions"]
+    conda:
+        env_folder + "/sparcc_dlegor.yml"
+    shell:
+        """
+        mkdir -p "{output_folder}/tmp_pcor_{wildcards.n_perm}_{wildcards.map_label}"
+        cd "{output_folder}/tmp_pcor_{wildcards.n_perm}_{wildcards.map_label}"
+
+        python {submodule_folder}/SparCC/Compute_SparCC.py -di {input} \
+                                                   -scor {output[0]} \
+                                                   -scov {output[1]} \
+                                                   -n {wildcards.map_label}_perm_{wildcards.n_perm} \
+                                                   -ni {params.N_inf} \
+                                                   -xi {params.N_exl}
+
+        rm -r "{output_folder}/tmp_pcor_{wildcards.n_perm}_{wildcards.map_label}"
+        """
+
+
+rule sparcc_pvals:
+    input:
+        output_folder + "/split_nets/sparcc/{map_label}_scor.csv",
+        expand(output_folder + "/split_nets/sparcc/pvals/{{map_label}}_scor_{n_perm}.csv", n_perm = list(range(config["sparcc_permutations"]))),
+    output:
+        temp(output_folder + "/split_nets/sparcc/{map_label}_1spv.csv"),
+        temp(output_folder + "/split_nets/sparcc/{map_label}_2spv.csv"),
+    params:
+        N_perm = config["sparcc_permutations"]
+    conda:
+        env_folder + "/sparcc_dlegor.yml"
+    shell:
+        """
+        mkdir -p "{output_folder}/tmp_pvals_{wildcards.map_label}"
+        cd "{output_folder}/tmp_pvals_{wildcards.map_label}"
+
+        python {submodule_folder}/SparCC/PseudoPvals.py {input[0]} {output_folder}/split_nets/sparcc/pvals/{wildcards.map_label}_scor_#.csv $(({params.N_perm}-1)) -o {output[0]} -t one_sided
+
+        python {submodule_folder}/SparCC/PseudoPvals.py {input[0]} {output_folder}/split_nets/sparcc/pvals/{wildcards.map_label}_scor_#.csv $(({params.N_perm}-1)) -o {output[1]} -t two_sided
+
+        rm -r "{output_folder}/tmp_pvals_{wildcards.map_label}"
+        """
+
+
+rule add_names:
+    input:
+        output_folder + "/split_OTUs/sparcc/{map_label}_OTU.csv",
+        output_folder + "/split_nets/sparcc/{map_label}_{file_type}.csv",
+    output:
+        temp(output_folder + "/split_nets/sparcc/{map_label}_names_{file_type}.csv"),
+    wildcard_constraints:
+        file_type="scor|scov|1spv|2spv"
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/add_names.R --names_source {input[0]} --file {input[1]} --out_file {output}
+        """
+
+
+rule merge_tables:
+    input:
+        output_folder + "/split_nets/sparcc/{map_label}_names_scor.csv",
+        output_folder + "/split_nets/sparcc/{map_label}_names_scov.csv",
+        output_folder + "/split_nets/sparcc/{map_label}_names_1spv.csv",
+        output_folder + "/split_nets/sparcc/{map_label}_names_2spv.csv",
+    output:
+        output_folder + "/split_nets/sparcc/{map_label}_final.xlsx",
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/merge_sparcc_tables.R --cor_mat {input[0]} --cov_mat {input[1]} --one_sided_p_mat {input[2]} --two_sided_p_mat {input[3]} --out_file {output}
+        """
+
+
+

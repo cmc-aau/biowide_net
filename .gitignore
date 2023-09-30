@@ -1,0 +1,18 @@
+# The following folders and files will be ginored
+
+# The snakemake folder generated from running/testing the repo
+.snakemake/
+
+# The raw data, please download them from the fource indicated in the paper
+data/*
+!data/.gitkeep
+
+# The envs folder must contain solely the .yml files to rebuild the mamba environments
+envs/*
+!envs/snakemake.yml
+!envs/R_basics.yml
+!envs/sparcc_dlegor.yml
+
+# The results folder, please re-generate the results by running the code in this repo
+results/*
+!results/.gitkeep

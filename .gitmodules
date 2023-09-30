@@ -1,0 +1,3 @@
+[submodule "submodules/SparCC"]
+	path = submodules/SparCC
+	url = https://github.com/dlegor/SparCC
