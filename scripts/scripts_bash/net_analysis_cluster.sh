@@ -40,8 +40,9 @@ export SUBMODULES_DIR
 
 cd $REPO_DIR
 
-snakemake -n -c 1 \
+snakemake -c 190 \
 	--use-conda --conda-prefix $ENV_DIR \
+	--conda-frontend conda \
 	--configfile $CONFIG_DIR/main.yaml \
 	-s $PYTHON_DIR/nets.snakefile
 
