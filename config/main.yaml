@@ -1,14 +1,17 @@
 # Main config file to run the analyis
 
 # Input files
-metadata_table: "2023-09-25_metadata_filtered.csv"
-counts_OTUs_table: "2023-09-25_genus_table_rarefied.csv"
+metadata_table: "2023-09-25_metadata_filtered_genus.csv"
+counts_OTUs_table: "2023-09-25_genus_pa_data.csv"
 binary_OTUs_table: "2023-09-25_plant_table.csv"
 
+# PA params
+PA_th: 0
+
 # Params for sparcc
-sparcc_inferences: 20
+sparcc_inferences: 10
 sparcc_exlclusions: 10
-sparcc_permutations: 1000
+sparcc_permutations: 100
 
 # Params to filter the nets
 filter_p_val: 0.05

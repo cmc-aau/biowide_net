@@ -12,6 +12,36 @@ rule split_binary_OTUs:
         """
 
 
+rule PA_combine_tables_in_binary:
+    input:
+        binary_table = input_folder + "/" + config["binary_OTUs_table"],
+        counts_table = input_folder + "/" + config["counts_OTUs_table"],
+    output:
+        output_folder + "/PA_combined_table/PA_OTUs.csv"
+    conda:
+        env_folder + "/R_basics.yml"
+    params:
+        pa_th = config["PA_th"],
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/PA_combine_OTUs.R --pa_threshold {params.pa_th} --file_bin {input.binary_table} --file_counts {input.counts_table} --out_file {output}
+        """
+
+
+rule PA_split_binary_OTUs:
+    input:
+        binary_table = output_folder + "/PA_combined_table/PA_OTUs.csv",
+        mapping_table = output_folder + "/mapping.txt",
+    output:
+        expand(output_folder + "/PA_split_OTUs/jaccard/{map_label}_OTU.csv", map_label = map_labels),
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/split_OTUs.R --file {input.binary_table} --mapping {input.mapping_table} --out_folder {output_folder}/PA_split_OTUs/jaccard
+        """
+
+
 rule jaccard_network:
     input:
         output_folder + "/split_OTUs/jaccard/{map_label}_OTU.csv",
@@ -24,4 +54,16 @@ rule jaccard_network:
         Rscript {script_folder}/scripts_R/jaccard.R --file {input} --out_file {output}
         """
 
+
+rule PA_jaccard_network:
+    input:
+        output_folder + "/PA_split_OTUs/jaccard/{map_label}_OTU.csv",
+    output:
+        output_folder + "/PA_split_nets/jaccard/{map_label}_final.xlsx",
+    conda:
+        env_folder + "/R_basics.yml"
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/jaccard.R --file {input} --out_file {output}
+        """
 

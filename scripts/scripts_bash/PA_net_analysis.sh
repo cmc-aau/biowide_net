@@ -42,13 +42,13 @@ snakemake --unlock -c 15 \
         --rerun-incomplete \
         --use-conda --conda-prefix $ENV_DIR \
         --configfile $CONFIG_DIR/main.yaml \
-        -s $PYTHON_DIR/nets.snakefile
+        -s $PYTHON_DIR/PA_nets.snakefile
 
 snakemake -c 15 \
 	--rerun-incomplete \
 	--use-conda --conda-prefix $ENV_DIR \
 	--configfile $CONFIG_DIR/main.yaml \
-	-s $PYTHON_DIR/nets.snakefile
+	-s $PYTHON_DIR/PA_nets.snakefile
 
 
 

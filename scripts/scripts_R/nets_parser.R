@@ -1,8 +1,8 @@
 # Script description
 
-library(optparse)
-library(tidyverse)
-library(openxlsx)
+suppressMessages(library(optparse))
+suppressMessages(library(tidyverse))
+suppressMessages(library(openxlsx))
 
 option_list = list(
   make_option(c("-i", "--input_files"), type="character", 

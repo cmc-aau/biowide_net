@@ -27,4 +27,25 @@ rule combine_nets_tables:
         Rscript {script_folder}/scripts_R/nets_parser.R --input_files $FILE_LIST --out_file {output} --p_threshold {params.p_th} --stat_threshold {params.stat_th}
         """
 
+rule PA_combine_nets_tables:
+    input:
+        expand(output_folder + "/PA_split_nets/{net_type}/{map_label}_final.xlsx", map_label = map_labels, net_type = net_types)
+    output:
+        output_folder + "/PA_split_nets/combined_nets.xlsx",
+    conda:
+        env_folder + "/R_basics.yml"
+    params:
+        p_th = config["filter_p_val"],
+        stat_th = config["filter_stat_value"]
+    shell:
+        """
+        FILE_LIST=`echo {input} | awk -F " " 'BEGIN{{OFS=","}}{{$1=$1; print $0}}'`
+
+        echo $FILE_LIST
+
+        Rscript {script_folder}/scripts_R/nets_parser.R --input_files $FILE_LIST --out_file {output} --p_threshold {params.p_th} --stat_threshold {params.stat_th}
+        """
+
+
+
 

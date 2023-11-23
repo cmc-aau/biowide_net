@@ -1,8 +1,8 @@
 # Split OTU table into subsets according to a mapping file
 
-library(optparse)
-library(tidyverse)
-library(matrixStats)
+suppressMessages(library(optparse))
+suppressMessages(library(tidyverse))
+suppressMessages(library(matrixStats))
 
 option_list = list(
   make_option(c("-f", "--file"), type="character", default=NULL, 
@@ -24,7 +24,7 @@ map.table <- read_tsv(opt$mapping) %>%
 output_dir <- opt$out_folder
 
 if (!dir.exists(output_dir)){
-  dir.create(output_dir)
+  dir.create(output_dir, recursive = T)
 }
 
 #head(otu.table)
