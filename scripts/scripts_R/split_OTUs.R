@@ -45,7 +45,7 @@ for(index in indices){
   
   print(dim(otu.index))
   
-  otu.index.reduced <- otu.index[rowSds(as.matrix(otu.index))!=0,]
+  otu.index.reduced <- otu.index[rowSums(as.matrix(otu.index))>1,]
 
   print(dim(otu.index.reduced))
  
