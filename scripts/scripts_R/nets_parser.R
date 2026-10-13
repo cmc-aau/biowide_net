@@ -34,11 +34,15 @@ net.reformat <- function(fname){
   
   long.stats <- dd.stats %>%
     rownames_to_column("OTU.A") %>%
-    pivot_longer(names_to = "OTU.B", values_to = "stat", -OTU.A)
+    mutate(across(OTU.A, ~ str_replace_all(., " ", "."))) %>%
+    pivot_longer(names_to = "OTU.B", values_to = "stat", -OTU.A) %>%
+    mutate(across(OTU.B, ~ str_replace_all(., " ", ".")))
   
   long.pvalues <- dd.pvalues %>%
     rownames_to_column("OTU.A") %>%
-    pivot_longer(names_to = "OTU.B", values_to = "p.value", -OTU.A)
+    mutate(across(OTU.A, ~ str_replace_all(., " ", "."))) %>%
+    pivot_longer(names_to = "OTU.B", values_to = "p.value", -OTU.A) %>%
+    mutate(across(OTU.B, ~ str_replace_all(., " ", ".")))
   
   long.combined <- inner_join(long.stats,
                               long.pvalues,

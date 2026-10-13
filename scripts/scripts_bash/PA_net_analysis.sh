@@ -38,13 +38,13 @@ mamba activate $ENV_DIR/snakemake
 
 cd $REPO_DIR
 
-snakemake --unlock -c 15 \
+snakemake --unlock -c 9 \
         --rerun-incomplete \
         --use-conda --conda-prefix $ENV_DIR \
         --configfile $CONFIG_DIR/main.yaml \
         -s $PYTHON_DIR/PA_nets.snakefile
 
-snakemake -c 15 \
+snakemake -c 9 \
 	--rerun-incomplete \
 	--use-conda --conda-prefix $ENV_DIR \
 	--configfile $CONFIG_DIR/main.yaml \

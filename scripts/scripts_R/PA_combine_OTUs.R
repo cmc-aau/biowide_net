@@ -21,11 +21,11 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
-bin.table <- read.csv(opt$file_bin, row.names = 1)
-counts.table <- read.csv(opt$file_counts, row.names = 1)
+bin.table <- read.table(opt$file_bin, sep = "\t", row.names = 1, header = T)
+counts.table <- read.table(opt$file_counts, sep = "\t", row.names = 1, header = T)
 
-#dim(bin.table)
-#dim(counts.table)
+dim(bin.table)
+dim(counts.table)
 
 combined.table <- rbind(bin.table,
                         counts.table[,colnames(bin.table)]) %>%

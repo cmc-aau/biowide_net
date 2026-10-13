@@ -16,7 +16,7 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list)
 opt = parse_args(opt_parser)
 
-otu.table <- read.csv(opt$file, row.names = 1)
+otu.table <- read.table(opt$file, sep = ",", row.names = 1, header = T)
 
 map.table <- read_tsv(opt$mapping) %>%
   `colnames<-`(c("ID", "map_label"))
@@ -30,6 +30,20 @@ if (!dir.exists(output_dir)){
 #head(otu.table)
 
 #head(map.table)
+
+## Check if otu table is PA
+is_binary <- function(x) {
+  all(x %in% c(0, 1))
+}
+
+
+otu.table[] <- lapply(otu.table, function(col) {
+  if (is_binary(col)) {
+    col
+  } else {
+    ifelse(col > 0, 1, 0)
+  }
+})
 
 indices <- unique(map.table %>% pull(map_label))
 

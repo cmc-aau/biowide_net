@@ -14,5 +14,8 @@ rule all:
     input:
         #output_folder + "/PA_combined_table/PA_OTUs.csv",
         output_folder + "/PA_split_nets/combined_nets.xlsx",
+        output_folder + "/topology/node_metrics.csv",
+        output_folder + "/topology/edge_metrics.csv",
+        output_folder + "/topology/net_metrics.csv",
 
 

@@ -16,3 +16,13 @@ envs/*
 # The results folder, please re-generate the results by running the code in this repo
 results/*
 !results/.gitkeep
+
+# Dev
+scripts/scripts_R/not_git/*
+net_analysis_mod.*
+results_v0/*
+results_pre251009/*
+scripts/scripts_R/PA_indicator_figure.R
+OLD_combined_nets.xlsx
+
+

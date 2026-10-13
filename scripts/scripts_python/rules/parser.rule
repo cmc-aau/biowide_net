@@ -43,9 +43,36 @@ rule PA_combine_nets_tables:
 
         echo $FILE_LIST
 
-        Rscript {script_folder}/scripts_R/nets_parser.R --input_files $FILE_LIST --out_file {output} --p_threshold {params.p_th} --stat_threshold {params.stat_th}
+        Rscript {script_folder}/scripts_R/nets_parser.R \
+            --input_files $FILE_LIST --out_file {output} \
+            --p_threshold {params.p_th} \
+            --stat_threshold {params.stat_th}
         """
 
-
-
-
+rule singed_net_metrics:
+    input:
+        output_folder + "/PA_split_nets/combined_nets.xlsx",
+    output:
+        nodes = output_folder + "/topology/node_metrics.csv",
+        edges = output_folder + "/topology/edge_metrics.csv",
+        nets = output_folder + "/topology/net_metrics.csv",
+    conda:
+        env_folder + "/R_basics.yml"
+    params:
+        sheet = 1,
+        source = "OTU.1",
+        target = "OTU.2",
+        weight = "stat",
+        subnet = "label",
+    shell:
+        """
+        Rscript {script_folder}/scripts_R/signed_network_metrics_v2.R \
+            --input {input[0]} \
+            --source-col {params.source} \
+            --target-col {params.target} \
+            --weight-col {params.weight} \
+            --subnetwork-col {params.subnet} \
+            --node-output {output.nodes} \
+            --edge-output {output.edges} \
+            --network-output {output.nets}
+        """

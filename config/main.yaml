@@ -2,8 +2,8 @@
 
 # Input files
 metadata_table: "2023-09-25_metadata_filtered_genus.csv"
-counts_OTUs_table: "2023-09-25_genus_pa_data.csv"
-binary_OTUs_table: "2023-09-25_plant_table.csv"
+counts_OTUs_table: "2025-09-19_bg_rel_filt.tsv" # "2023-12-29_bg_pa_ra.csv"
+binary_OTUs_table: "2025-09-19_ag_pa_filt.tsv" # "2023-09-25_plant_table.csv"
 
 # PA params
 PA_th: 0
